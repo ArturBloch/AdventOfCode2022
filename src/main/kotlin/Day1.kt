@@ -23,7 +23,7 @@ private fun countElfCalories(fileLines: List<String>?): MutableList<Int>{
 private fun findDayOneSolutions(givenFile: String){
     val givenInput: List<String>? = readFileLineByLineUsingForEachLine(givenFile)
     val result = countElfCalories(givenInput)
-    println(result.sortedByDescending { value -> value }.subList(0, 3).sum())
+    println(result.sortedDescending().take(3).sum())
 }
 
 fun main() {
