@@ -12,7 +12,7 @@ private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> 
     object {}.javaClass.getResourceAsStream(givenFile)!!.bufferedReader().readLines()
 
 
-private fun findDaySevenSolutions(givenFile: String) {
+private fun findSolutions(givenFile: String) {
     val givenInput: List<String> = readFileLineByLineUsingForEachLine(givenFile)
     findSolution(givenInput)
 }
@@ -46,7 +46,7 @@ private fun newDirectory(givenInput: List<String>): Int{
 }
 
 fun main() {
-    findDaySevenSolutions(testFile)
-    findDaySevenSolutions(inputFile)
+    findSolutions(testFile)
+    findSolutions(inputFile)
 }
 
