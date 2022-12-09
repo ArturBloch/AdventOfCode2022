@@ -1,4 +1,5 @@
 import kotlin.math.abs
+import kotlin.math.max
 
 // DAY 9
 
@@ -10,8 +11,12 @@ private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> 
 
 data class SnakePart(var x: Int, var y: Int, var follows: SnakePart?)
 
+fun chebyshevDistance(snakePart: SnakePart, snakePartTwo: SnakePart): Int{
+    return max(abs(snakePart.x - snakePartTwo.x), abs(snakePart.y - snakePartTwo.y))
+}
+
 fun fixSnakePartPosition(snakePart: SnakePart, followedPart: SnakePart) {
-    if (abs(snakePart.x - followedPart.x) < 2 && abs(snakePart.y - followedPart.y) < 2 && (abs(snakePart.x - followedPart.x) + abs(snakePart.y - followedPart.y)) <= 2) return
+    if (chebyshevDistance(snakePart, followedPart) <= 1) return
     if (followedPart.x != snakePart.x && followedPart.y != snakePart.y) {
         var deltaY = (followedPart.y - snakePart.y) / abs((followedPart.y - snakePart.y))
         var deltaX = (followedPart.x - snakePart.x) / abs((followedPart.x - snakePart.x))
