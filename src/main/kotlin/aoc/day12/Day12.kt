@@ -1,9 +1,11 @@
+package aoc.day12
+
 import java.util.PriorityQueue
 
 // DAY 12
 
-private var testFile: String = "day12_test.txt";
-private var inputFile: String = "day12_input.txt";
+private var testFile: String = "input/day12_test.txt";
+private var inputFile: String = "input/day12_input.txt";
 private val END_CHAR = 'E'
 private val START_STRING = "S"
 private val stepsNeeded = "Sabcdefghijklmnopqrstuvwxyz"
@@ -32,7 +34,6 @@ private data class Node(var x: Int, var y: Int, var cost: Int) {
 }
 
 val neighbours: List<Pair<Int, Int>> = listOf(Pair(1, 0), Pair(0, 1), Pair(-1, 0), Pair(0, -1))
-
 
 private fun findOneStarSolution(givenFile: String) {
     val inputLines: List<String> = readFileLineByLineUsingForEachLine(givenFile)

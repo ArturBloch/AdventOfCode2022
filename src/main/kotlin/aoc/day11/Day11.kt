@@ -1,7 +1,8 @@
+package aoc.day11
 // DAY 11
 
-private var testFile: String = "day11_test.txt";
-private var inputFile: String = "day11_input.txt";
+private var testFile: String = "input/day11_test.txt";
+private var inputFile: String = "input/day11_input.txt";
 private var magicNumber: Long = 0
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> =

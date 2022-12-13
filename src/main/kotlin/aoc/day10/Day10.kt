@@ -1,9 +1,8 @@
-import java.lang.Math.abs
-
+package aoc.day10
 // DAY 10
 
-private var testFile: String = "day10_test.txt";
-private var inputFile: String = "day10_input.txt";
+private var testFile: String = "input/day10_test.txt";
+private var inputFile: String = "input/day10_input.txt";
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> =
     object {}.javaClass.getResourceAsStream(givenFile)!!.bufferedReader().readLines()

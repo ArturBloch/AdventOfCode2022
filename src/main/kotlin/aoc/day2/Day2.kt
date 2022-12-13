@@ -1,9 +1,10 @@
+package aoc.day2
 import java.lang.IllegalArgumentException
 
 // DAY 2
 
-private var testFile: String = "day2_test.txt";
-private var inputFile: String = "day2_input.txt";
+private var testFile: String = "input/day2_test.txt";
+private var inputFile: String = "input/day2_input.txt";
 
 private val gameMap: Map<String, Int> = hashMapOf(
     "AX" to 3, "AY" to 6, "AZ" to 0, "BX" to 0, "BY" to 3, "BZ" to 6, "CX" to 6, "CY" to 0, "CZ" to 3

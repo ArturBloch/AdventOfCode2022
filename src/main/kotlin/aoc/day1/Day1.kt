@@ -1,7 +1,8 @@
+package aoc.day1
 // DAY 1
 
-private var testFile: String = "day1_test.txt";
-private var inputFile: String = "day1_input.txt";
+private var testFile: String = "input/day1_test.txt";
+private var inputFile: String = "input/day1_input.txt";
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String>? = object {}.javaClass.getResourceAsStream(givenFile)?.bufferedReader()?.readLines()
 private fun countElfCalories(fileLines: List<String>?): MutableList<Int>{

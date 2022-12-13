@@ -1,7 +1,8 @@
+package aoc.day7
 // DAY 7
 
-private var testFile: String = "day7_test.txt";
-private var inputFile: String = "day7_input.txt";
+private var testFile: String = "input/day7_test.txt";
+private var inputFile: String = "input/day7_input.txt";
 private var lineIndex: Int = 0
 private var sumOfOneStar: Int = 0
 private var totalDiskSpaceAvailable = 70000000

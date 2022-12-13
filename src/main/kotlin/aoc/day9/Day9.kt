@@ -1,10 +1,12 @@
+package aoc.day9
+
 import kotlin.math.abs
 import kotlin.math.max
 
 // DAY 9
 
-private var testFile: String = "day9_test.txt";
-private var inputFile: String = "day9_input.txt";
+private var testFile: String = "input/day9_test.txt";
+private var inputFile: String = "input/day9_input.txt";
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> =
     object {}.javaClass.getResourceAsStream(givenFile)!!.bufferedReader().readLines()

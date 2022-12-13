@@ -1,7 +1,8 @@
+package aoc.day5
 // DAY 5
 
-private var testFile: String = "day5_test.txt";
-private var inputFile: String = "day5_input.txt";
+private var testFile: String = "input/day5_test.txt";
+private var inputFile: String = "input/day5_input.txt";
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): List<String> =
     object {}.javaClass.getResourceAsStream(givenFile)!!.bufferedReader().readLines()
