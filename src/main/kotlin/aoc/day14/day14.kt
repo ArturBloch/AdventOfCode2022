@@ -63,7 +63,7 @@ private fun findSolution(givenFile: String) {
     println("Sand stuck $sandCounter")
 }
 
-fun drawWalls(inputLines: List<String>, cave: Array<IntArray>) {
+private fun drawWalls(inputLines: List<String>, cave: Array<IntArray>) {
     inputLines.forEach { line ->
         val lineParts = line.split(" -> ")
         var currentX = -1
@@ -82,7 +82,7 @@ fun drawWalls(inputLines: List<String>, cave: Array<IntArray>) {
 
 }
 
-fun drawFloor(cave: Array<IntArray>) {
+private fun drawFloor(cave: Array<IntArray>) {
     for(i in 0 until cave[0].size){
         cave[cave.size - 1][i] = WALL
     }
