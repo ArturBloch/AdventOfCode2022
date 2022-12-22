@@ -1,11 +1,13 @@
 package aoc.day19
 
 import kotlin.math.max
+import kotlin.math.min
 
 private var testFile: String = "input/day19_test.txt";
 private var inputFile: String = "input/day19_input.txt";
 
-private var timeToEnd = 24
+private var timeToEndPart1 = 24
+private var timeToEndPart2 = 32
 
 private fun readFileLineByLineUsingForEachLine(givenFile: String): MutableList<String> =
     object {}.javaClass.getResourceAsStream(givenFile)!!.bufferedReader().readLines() as MutableList<String>
@@ -21,30 +23,31 @@ private data class State(
     var oreInventory: IntArray,
 ) {
     fun robotsGatherOre() {
-        for(i in robotInventory.indices){
+        for (i in robotInventory.indices) {
             oreInventory[i] += robotInventory[i]
         }
     }
 
-    fun createRobots(blueprint: Blueprint): List<State> {
-        val newStates = mutableListOf<State>()
-        for(robotCostIndex in GEODE downTo ORE) {
-            if(robotInventory[robotCostIndex] + 1 > blueprint.maxRobotsNeeded[robotCostIndex]) continue
-            val newOreState = oreInventory.copyOf()
-            for (oreIndex in ORE .. OBSIDIAN) {
-                newOreState[oreIndex] = newOreState[oreIndex] - blueprint.robotCosts[robotCostIndex][oreIndex]
-            }
-            if(newOreState.all { oreCount -> oreCount >= 0 }) {
-                val newRobotState = robotInventory.copyOf()
-                newRobotState[robotCostIndex]++
-                val newState = State(currentTurn, robotInventory, newOreState)
-                newState.robotsGatherOre()
-                newState.robotInventory = newRobotState
-                newStates.add(newState)
-                if(robotCostIndex >= OBSIDIAN) break
-            }
+    fun canAffordGeodeBot(blueprint: Blueprint): Boolean {
+        return (ORE..OBSIDIAN).all { oreIndex -> oreInventory[oreIndex] >= blueprint.robotCosts[GEODE][oreIndex] }
+    }
+
+    fun createRobot(blueprint: Blueprint, oreIndex: Int): State? {
+        if (robotInventory[oreIndex] + 1 > blueprint.maxRobotsNeeded[oreIndex]) return null
+        val newOreState = oreInventory.copyOf()
+        val newRobotState = robotInventory.copyOf()
+        newRobotState[oreIndex]++
+        for (oreCostIndex in ORE..OBSIDIAN) {
+            newOreState[oreCostIndex] = newOreState[oreCostIndex] - blueprint.robotCosts[oreIndex][oreCostIndex]
         }
-        return newStates
+        if (newOreState.any { oreCount -> oreCount < 0 }) return null
+        var newState = this.copy(
+            currentTurn = currentTurn + 1,
+            oreInventory = newOreState
+        )
+        newState.robotsGatherOre()
+        newState.robotInventory = newRobotState
+        return newState
     }
 }
 
@@ -73,48 +76,78 @@ private fun findOneStarSolution(givenFile: String) {
         val geodeRobotCost = intArrayOf(numbers[5], 0, numbers[6])
         val robotCosts = listOf(oreRobotCost, clayRobotCost, obsidianRobotCost, geodeRobotCost)
         val maxOreNeeded = (ORE..GEODE).map oreNeeded@{ oreIndex ->
-            if(oreIndex == GEODE) return@oreNeeded Integer.MAX_VALUE
+            if (oreIndex == GEODE) return@oreNeeded Integer.MAX_VALUE
             robotCosts.maxOf { robotCost -> robotCost[oreIndex] }
         }.toIntArray()
         Blueprint(numbers[0], robotCosts, maxOreNeeded)
     }
-    val maxScore = blueprints.sumOf { blueprint ->
-        var result = findBestGeodeScore(blueprint)
+    val maxScorePart1 = blueprints.sumOf { blueprint ->
+        println("New blueprint ${blueprint.id}")
+        val initialState = State(0, intArrayOf(1, 0, 0, 0), intArrayOf(0, 0, 0, 0))
+        var result = findBestGeodeScore(blueprint, initialState, -1, timeToEndPart1)
 
         println("Max Geodes $result")
         blueprintQualityLevel(blueprint.id, result)
     }
-    println("Max score is $maxScore")
+    println("Answer to part 1 is $maxScorePart1")
+
 }
 
-private fun findBestGeodeScore(blueprint: Blueprint): Int {
-    println("New blueprint ${blueprint.id}")
-    val initialState = State(0, intArrayOf(1, 0, 0, 0), intArrayOf(0, 0, 0, 0))
-    val statesToProcess = mutableListOf(initialState)
-    var maxGeodes = 0
-    var maxGeodesSeen = 0
-    while(statesToProcess.isNotEmpty()){
-        val state = statesToProcess.removeFirst();
-        maxGeodesSeen = max(state.oreInventory[GEODE], maxGeodesSeen)
-        if(state.oreInventory[GEODE] < maxGeodesSeen) continue
-        println("${statesToProcess.size} ${state.currentTurn} ${state.robotInventory[0]}")
-//        println(state)
-        if (state.currentTurn >= timeToEnd) {
-            maxGeodes = max(maxGeodes, state.oreInventory[GEODE])
-            continue
-        }
-        state.currentTurn++
-        val newStates = state.createRobots(blueprint)
-        statesToProcess.addAll(newStates)
-        state.robotsGatherOre()
-        statesToProcess.add(state)
-        // state.turn ++
-    }
-    return maxGeodes
-}
 
 private fun findTwoStarSolution(givenFile: String) {
     val inputLines: List<String> = readFileLineByLineUsingForEachLine(givenFile)
+    val blueprints = inputLines.subList(0, min(inputLines.size, 3)).map { line ->
+        val numbers = Regex("(-?\\d+)").findAll(line).map { it.value.toInt() }.toMutableList()
+        val oreRobotCost = intArrayOf(numbers[1], 0, 0)
+        val clayRobotCost = intArrayOf(numbers[2], 0, 0)
+        val obsidianRobotCost = intArrayOf(numbers[3], numbers[4], 0)
+        val geodeRobotCost = intArrayOf(numbers[5], 0, numbers[6])
+        val robotCosts = listOf(oreRobotCost, clayRobotCost, obsidianRobotCost, geodeRobotCost)
+        val maxOreNeeded = (ORE..GEODE).map oreNeeded@{ oreIndex ->
+            if (oreIndex == GEODE) return@oreNeeded Integer.MAX_VALUE
+            robotCosts.maxOf { robotCost -> robotCost[oreIndex] }
+        }.toIntArray()
+        Blueprint(numbers[0], robotCosts, maxOreNeeded)
+    }
+    val maxScorePart2 = blueprints.map { blueprint ->
+        println("New blueprint ${blueprint.id}")
+        val initialState = State(0, intArrayOf(1, 0, 0, 0), intArrayOf(0, 0, 0, 0))
+        var result = findBestGeodeScore(blueprint, initialState, -1, timeToEndPart2)
+        println("Max Geodes $result")
+        result
+    }.reduce { x, acc -> x * acc }
+    println("Answer to part 2 is $maxScorePart2")
+}
+
+private fun robotEveryTurn(num: Int): Int {
+    if (num == 0) return 0
+    return (1..num).reduce(Integer::sum)
+}
+
+private fun maxObtainableGeodes(fromState: State, timeToEnd: Int): Int {
+    var turnsLeft = timeToEnd - fromState.currentTurn
+    return fromState.oreInventory[GEODE] + (fromState.robotInventory[GEODE] * turnsLeft) + robotEveryTurn(turnsLeft)
+}
+
+private fun findBestGeodeScore(blueprint: Blueprint, currentState: State, maxGeodes: Int, timeToEnd: Int): Int {
+    // if reached the end update maxGeodes and return
+    var maxGeodesSoFar = maxGeodes
+    if (currentState.currentTurn >= timeToEnd) {
+        maxGeodesSoFar = max(maxGeodesSoFar, currentState.oreInventory[GEODE])
+        return currentState.oreInventory[GEODE];
+    }
+    if (maxObtainableGeodes(currentState, timeToEnd) < maxGeodesSoFar && maxGeodesSoFar != -1) {
+        return maxGeodesSoFar
+    }
+    // if cannot reach higher amount then just return
+    var fromOre = ORE
+    if (currentState.canAffordGeodeBot(blueprint)) fromOre = GEODE
+    maxGeodesSoFar = max(maxGeodesSoFar, (fromOre..GEODE).mapNotNull { ore ->
+        currentState.createRobot(blueprint, ore)
+    }.maxOfOrNull { state -> findBestGeodeScore(blueprint, state, maxGeodesSoFar, timeToEnd) } ?: -1)
+    currentState.currentTurn++
+    currentState.robotsGatherOre()
+    return max(maxGeodesSoFar, findBestGeodeScore(blueprint, currentState, maxGeodesSoFar, timeToEnd))
 }
 
 fun main() {
